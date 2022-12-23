@@ -6,6 +6,7 @@ import Game from "./scenes/Game"
 import UI from "./scenes/UI"
 import Loading from "./scenes/Loading"
 import GamepadHandler from "./scenes/GamepadHandler"
+import Editor from "./scenes/Editor"
 
 try { 
 
@@ -21,8 +22,8 @@ const config = {
     scale: {
       mode: Phaser.Scale.FIT,
       autoCenter: Phaser.Scale.CENTER_BOTH,
-      height: 1080,
-      width: 1920,
+      height: 720,
+      width: 1280,
     }, 
     input:{
       gamepad:true
@@ -30,13 +31,12 @@ const config = {
     physics: {
       default: "arcade",
       arcade:{
-        gravity:{
-          y:1200
-        },
+        
         debug:false
       }
     },
     scene: [
+      Editor,
       Loading,
       Game,
       UI,
