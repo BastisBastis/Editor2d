@@ -39,6 +39,7 @@ export class Window {
     
     this._x=x
     this._y=y
+    this.depth=depth
     
     this.bg
       .setOrigin(0.5,0.5)
@@ -90,10 +91,33 @@ export class Window {
     this.setVisible(val)
   }
   
+  setScrollFactor(x,y=x) {
+    ;[
+      this.bg,
+      ...this.children
+    ].forEach(obj=>obj.setScrollFactor(x,y))
+    return this
+  }
+  
   setVisible(val) {
     this._visible=val
     this.bg.visible=val
     return this
+  }
+  
+  get items(){
+    return [
+      this.bg,
+      ...this.children
+    ]
+  }
+  
+  get width() {
+    return this.bg.width
+  }
+  
+  get height() {
+    return this.bg.height
   }
   
   destroy() {

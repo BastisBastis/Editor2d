@@ -7,9 +7,9 @@ b6f5db-green1
 b1d480-green3
 80b878-green4
 658d78-green5
-b8b4b2-grey1
-dcdac9-grey2
-887d8d-grey3
+b8b4b2-gray1
+dcdac9-gray2
+887d8d-gray3
 5c486a-purple3
 412051-purple8
 72b6cf-blue1

@@ -9,6 +9,8 @@ import { SFXManager } from "../helpers/sfxManager"
 //Data
 import { Palette } from "../data/Palette" 
 
+
+
 export default class Game extends Phaser.Scene {
   constructor() {
     super("game")

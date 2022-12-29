@@ -23,5 +23,5 @@
     "xbuild": "webpack --config webpack/prod.js ",
     "start": "webpack-dev-server --config webpack/base.js --open"
   },
-  "main": "src/scenes/Game.js"
+  "main": "src/scenes/Editor.js"
 }
