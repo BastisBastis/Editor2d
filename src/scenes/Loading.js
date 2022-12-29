@@ -8,6 +8,7 @@ import Phaser from "phaser"
 import { MusicManager } from "../helpers/MusicManager" 
 import { SFXManager } from "../helpers/sfxManager" 
 import { GlobalStuff } from "../helpers/GlobalStuff" 
+import { PreloadGraphics } from "../helpers/GraphicsLoader" 
 
 
 //Data
@@ -55,7 +56,7 @@ export default class Loading extends Phaser.Scene {
     
     MusicManager.preload(this)
     SFXManager.preload(this)
-    
+    PreloadGraphics(this)
 
 
   }
@@ -63,10 +64,10 @@ export default class Loading extends Phaser.Scene {
   create() {
     MusicManager.setup(this)
     //MusicManager.play(0,this)
-    this.fadeOut(500)
+    this.fadeOut(100)
     setTimeout(()=>{
-      this.scene.start("game")
-    },500)
+      this.scene.start("editor")
+    },100)
   }
   
   fadeOut(duration) {

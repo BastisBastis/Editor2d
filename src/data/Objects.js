@@ -1,0 +1,32 @@
+export const Objects=[
+  {
+    key:"floor1",
+    spriteKey:"floorTex1",
+    iconKey:"floorTex1",
+    layer:0,
+    type:"decoration",
+    attributes:{
+      rotation:0
+    }
+  },
+  {
+    key:"floor2",
+    spriteKey:"floorTex2",
+    iconKey:"floorTex2",
+    layer:0,
+    type:"decoration",
+    attributes:{
+      rotation:0
+    }
+  },
+  {
+    key:"desk",
+    spriteKey:"tmpObject1-topdown",
+    iconKey:"tmpObject1-3d",
+    layer:1,
+    type:"object",
+    attributes:{
+      rotation:0
+    }
+  }
+]

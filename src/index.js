@@ -2,10 +2,10 @@ import Phaser from 'phaser'
 import WebFontLoaderPlugin from 'phaser3-rex-plugins/plugins/webfontloader-plugin.js'
 
 
-import Game from "./scenes/Game"
+
 import UI from "./scenes/UI"
 import Loading from "./scenes/Loading"
-import GamepadHandler from "./scenes/GamepadHandler"
+
 import Editor from "./scenes/Editor"
 
 try { 
@@ -25,22 +25,11 @@ const config = {
       height: 720,
       width: 1280,
     }, 
-    input:{
-      gamepad:true
-    },
-    physics: {
-      default: "arcade",
-      arcade:{
-        
-        debug:false
-      }
-    },
+    
     scene: [
-      Editor,
       Loading,
-      Game,
+      Editor,
       UI,
-      GamepadHandler
     ],
     dom: {
         createContainer: true

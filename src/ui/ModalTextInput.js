@@ -136,8 +136,10 @@ export class ModalTextInput extends Window {
         ...btnConfig,
         
         onClick:()=>{
+          try { 
+          onConfirm(this.inputText.text)
           this.destroy()
-          onConfirm()
+          } catch (er) {console.log(er.message,er.stack); throw er} 
         }
       }
     )
@@ -158,8 +160,8 @@ export class ModalTextInput extends Window {
         onCancel:()=>{
           resolve(null)
         },
-        onConfirm:()=>{
-          resolve(this.inputText.value)
+        onConfirm:(result)=>{
+          resolve(result)
         }
       })
       } catch (er) {console.log(er.message,er.stack); throw er} 
