@@ -16,7 +16,7 @@ export class WallTools {
     
     const cam=scene.cameras.main
     
-    const bgColor=Palette.gray2.hex
+    const bgColor=Palette.blue4.hex
     
     const selectedToolWidth=140
     const selectedToolHeight=100

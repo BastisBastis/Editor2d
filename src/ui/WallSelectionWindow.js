@@ -14,7 +14,7 @@ const labelMarginX=20
 const labelMarginY=20
 const labelDeltaY=100
 const fontSize=24
-const fontColor=Palette.purple8
+const fontColor=Palette.white.string
 
 const iconY= 200
 const iconBgSize=100
@@ -49,7 +49,7 @@ export class WallSelectionWindow {
       0,
       width,
       cam.height*1.5,
-      Palette.blue1.hex
+      Palette.blue4.hex
     ).setDepth(depth)
       .setOrigin(0,0)
       .setInteractive()
