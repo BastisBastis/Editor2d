@@ -39,7 +39,7 @@ export class ModalTextInput extends Window {
       inputBorderThickness=2,
       inputBorderColor=fontColor,
       inputFontColor=fontColor,
-      inputBackground=Palette.gray3.string,
+      inputBackground=Palette.gray1.string,
       inputMaxCharacters=24,
       stackButtons=false
     }=config
@@ -147,8 +147,8 @@ export class ModalTextInput extends Window {
     this.children.push(
       this.label,
       this.inputText,
-      this.cancel.items,
-      this.confirm.items
+      this.cancel,
+      this.confirm,
     )
   }
   
@@ -176,10 +176,12 @@ export class ModalTextInput extends Window {
       ease:Phaser.Math.Easing.Cubic.In,
       onComplete:()=>{
         super.destroy()
+        /*
         this.label.destroy()
         this.cancel.destroy()
         this.confirm.destroy()
         this.inputText.destroy()
+        */
       }
     })
     this.scene.tweens.add({

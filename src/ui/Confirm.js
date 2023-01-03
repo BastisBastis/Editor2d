@@ -89,27 +89,7 @@ export class Confirm extends Window {
         }
       )
       
-      /*
-    this.cancel=scene.add.text(left+width*0.15,top+height*0.7,cancelString,{
-      fontSize:buttonFontSize,
-      fontFamily:fontFamily,
-      color:buttonFontColor
-    }).setOrigin(0,0.5)
-      .setDepth(depth)
-      .setInteractive()
-      .on("pointerdown",()=>{
-        this.destroy()
-        onCancel()
-      })
-      .on("pointerover",()=>{
-        EventCenter.emit("playAudio",{
-            key:"hover"
-          })
-          this.cancel.setColor(hoverFontColor)
-      }).on("pointerout",()=>{
-          this.cancel.setColor(buttonFontColor)
-      })
-      */
+      
       this.confirm=new Button(scene,
         left+width*0.75,top+height*0.7,confirmString,{
           ...btnConfig,
@@ -120,28 +100,7 @@ export class Confirm extends Window {
           }
         }
       )
-      /*
-    this.confirm=scene.add.text(left+width*0.85,top+height*0.7,confirmString,{
-      fontSize:buttonFontSize,
-      fontFamily:fontFamily,
-      color:buttonFontColor
-    }).setOrigin(1.0,0.5)
-      .setDepth(depth)
-      .setInteractive()
-      .on("pointerdown",()=>{
-        this.destroy()
-        onConfirm()
-      })
-      .on("pointerover",()=>{
-        EventCenter.emit("playAudio",{
-          key:"hover"
-        })
-        this.confirm.setColor(hoverFontColor)
-      }).on("pointerout",()=>{
-          this.confirm.setColor(buttonFontColor)
-      })
-      
-    */
+    this.children.push(this.label,this.cancel,this.confirm)
   }
   
   static prompt(scene,x,y,string,config={}) {
@@ -167,10 +126,14 @@ export class Confirm extends Window {
       duration:300,
       ease:Phaser.Math.Easing.Cubic.In,
       onComplete:()=>{
+        try { 
         super.destroy()
+        } catch (er) {console.log(er.message,er.stack); throw er} 
+        /*
         this.label.destroy()
         this.cancel.destroy()
         this.confirm.destroy()
+        */
       }
     })
     this.scene.tweens.add({

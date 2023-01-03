@@ -40,7 +40,8 @@ export class Button extends Window {
     this.label=scene.add.text(x,y,string,{
       fontSize:fontSize,
       fontFamily:fontFamily,
-      color:fontColor
+      color:fontColor,
+      align:"center"
     }).setOrigin(0.5,0.5)
       .setDepth(depth)
       

@@ -6,7 +6,9 @@ export const Objects=[
     layer:0,
     type:"decoration",
     attributes:{
-      rotation:0
+      rotation:0,
+      offsetX:0,
+      offsetZ:0
     }
   },
   {
@@ -16,7 +18,9 @@ export const Objects=[
     layer:0,
     type:"decoration",
     attributes:{
-      rotation:0
+      rotation:0,
+      offsetX:0,
+      offsetZ:0
     }
   },
   {
@@ -26,7 +30,174 @@ export const Objects=[
     layer:1,
     type:"object",
     attributes:{
-      rotation:0
+      rotation:0,
+      offsetX:0,
+      offsetZ:0
     }
   }
 ]
+
+
+
+const clearObjects=()=>{
+  
+  while (Objects.length>0)
+    Objects.pop()
+}
+
+export const loadRCDCObjects=()=>{
+  clearObjects()
+  const attributes={
+    rotation:0,
+    offsetX:0,
+    offsetZ:0
+  }
+  Objects.push(
+    {
+      key:"wall1",
+      iconKey:"Wall1Icon",
+      spriteKey:"Wall1TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"wall2",
+      iconKey:"Wall2Icon",
+      spriteKey:"Wall2TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"wall3",
+      iconKey:"Wall3Icon",
+      spriteKey:"Wall3TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"corner1",
+      iconKey:"Corner1Icon",
+      spriteKey:"Corner1TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"door",
+      iconKey:"DoorIcon",
+      spriteKey:"DoorTD",
+      layer:0,
+      type:"object",
+      attributes:{...attributes}
+    },
+    {
+      key:"floor1",
+      iconKey:"Floor1Icon",
+      spriteKey:"Floor1TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"wall4",
+      iconKey:"Wall4Icon",
+      spriteKey:"Wall4TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"floor4",
+      iconKey:"Floor4Icon",
+      spriteKey:"Floor4TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"corner2",
+      iconKey:"Corner2Icon",
+      spriteKey:"Corner2TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"floor2",
+      iconKey:"Floor2Icon",
+      spriteKey:"Floor2TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"floor3",
+      iconKey:"Floor3Icon",
+      spriteKey:"Floor3TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"extra0",
+      iconKey:"Extra0Icon",
+      spriteKey:"Extra0TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"extra1",
+      iconKey:"Extra1Icon",
+      spriteKey:"Extra1TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"extra2",
+      iconKey:"Extra2Icon",
+      spriteKey:"Extra2TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"extra3",
+      iconKey:"Extra3Icon",
+      spriteKey:"Extra3TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"extra4",
+      iconKey:"Extra4Icon",
+      spriteKey:"Extra4TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"extra5",
+      iconKey:"Extra5Icon",
+      spriteKey:"Extra5TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+    {
+      key:"extra6",
+      iconKey:"Extra6Icon",
+      spriteKey:"Extra6TD",
+      layer:0,
+      type:"decoration",
+      attributes:{...attributes}
+    },
+  )
+}
+
+loadRCDCObjects()

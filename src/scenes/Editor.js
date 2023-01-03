@@ -1,10 +1,15 @@
 import Phaser from "phaser"
 
+
 //helpers
 import { EventCenter } from "../helpers/EventCenter" 
 import { GlobalStuff } from "../helpers/GlobalStuff" 
 import { MusicManager } from "../helpers/MusicManager" 
 import { SFXManager } from "../helpers/sfxManager"
+import { ActionManager } from "../helpers/ActionManager" 
+import { NextId } from "../helpers/IdGenerator" 
+import { exportLevel } from "../helpers/Exporter" 
+import { ParseLoadedData } from "../helpers/DataParser" 
 
 //Data
 import { Palette } from "../data/Palette" 
@@ -26,7 +31,7 @@ export default class Game extends Phaser.Scene {
   
   
   create({
-    
+    loadedData
   }) {
     try { 
     //Background
@@ -49,20 +54,38 @@ export default class Game extends Phaser.Scene {
     )
     
     
+    
     this.tileSize=50
     
-    this.levelDetails={
-      title:"Default level",
-      width:25,
-      height:14
+    if (loadedData) {
+      const parsedData=ParseLoadedData(loadedData)
+      this.map=parsedData.map
+      this.levelDetails=parsedData.details
+      this.walls=parsedData.walls
+      this.updateTileGraphics()
+      this.updateWallGraphics()
+    } else {
+      this.levelDetails={
+        title:"Unnamed level",
+        width:25,
+        height:14,
+        levels:1,
+        wallThickness:0.2, //fraction of tile
+      }
+      this.setupMap()
+      this.setupWalls()
     }
     
     
+    this.addWallStart=null
     this.setupTools()
-    this.setupMap()
+    
     this.setupGrid()
+    //this.toggleGrid()
     this.setupClickDetection()
     //this.setupUI()
+    this.actionManager = new ActionManager(this,this.map,this.walls)
+    
     this.setupEventListeners()
     
     this.scene.launch("ui",{
@@ -87,6 +110,25 @@ export default class Game extends Phaser.Scene {
    
    EventCenter.on("deselect",this.deselect,this)
    
+   EventCenter.on("clearTile",this.clearTile,this)
+   
+   EventCenter.on("undo",this.undo,this)
+   
+   EventCenter.on("modifyAttribute",this.modifyAttribute,this)
+   
+   EventCenter.on("addAttribute",this.addAttribute,this)
+   
+   EventCenter.on("removeAttribute",this.removeAttribute,this)
+   
+   EventCenter.on("moveWall",this.moveWall,this)
+   
+   EventCenter.on("rotateWall",this.rotateWall,this)
+   
+   EventCenter.on("deleteWall",this.deleteWall,this)
+   
+   EventCenter.on("modifyWallLength",this.modifyWallLength,this)
+   
+   EventCenter.on("exportLevel",this.exportLevel,this)
   }
   
   handleUILoaded() {
@@ -111,7 +153,9 @@ export default class Game extends Phaser.Scene {
         
         const column=Math.floor((p.worldX)/this.tileSize)
         const row=Math.floor((p.worldY)/this.tileSize)
-        this.tileClicked(column,row)
+        const cellX=(p.worldX/this.tileSize-column)
+        const cellY=(p.worldY/this.tileSize-row)
+        this.tileClicked(column,row,cellX,cellY)
       })
     this.input.setDraggable(detector)
     detector.on("drag",(p,dx,dy)=>{
@@ -203,7 +247,7 @@ export default class Game extends Phaser.Scene {
         const floorSprite=this.add.image(
           (x+0.5)*this.tileSize,
           (y+0.5)*this.tileSize,
-          "floorTex1"
+          Objects[0].spriteKey
         ).setDepth(1)
           .setDisplaySize(
             this.tileSize,
@@ -215,7 +259,7 @@ export default class Game extends Phaser.Scene {
               {
                 oid:0,
                 sprite:floorSprite,
-                attributes:Objects[0].attributes
+                attributes:{...Objects[0].attributes}
               },null,null
             ]
           ]
@@ -225,48 +269,257 @@ export default class Game extends Phaser.Scene {
     }
   }
   
-  tileClicked(col,row) {
+  updateTileGraphics(){
+    this.map.forEach((rows,columnIndex)=>{
+      rows.forEach((levels,rowIndex)=>{
+        levels.forEach((level,levelIndex)=>{
+          level.forEach((layer,layerIndex)=>{
+            if (layer) {
+              if (layer.sprite)
+                layer.sprite.destroy()
+              layer.sprite= this.add.image(
+              (columnIndex+0.5)*this.tileSize,
+              (rowIndex+0.5)*this.tileSize,
+              Objects[layer.oid].spriteKey
+            ).setDepth(1)
+              .setDisplaySize(
+                this.tileSize,
+                this.tileSize
+            )
+              .setAngle(layer.attributes.rotation||0)
+            }
+          }) 
+        })
+      })
+    })
+  }
+  
+  setupWalls() {
+    /*
+      Wall structure:
+      [
+        {
+          id: int
+          start: {
+            column,
+            row
+          },
+          direction: "x" || "z",
+          length:1,
+          textures: {
+            nw,
+            se
+          }
+        },
+        graphics:Phaser.GameObjects.Rectangle
+      ]
+    */
+    //Create array
+    this.walls=[]
+    this.selectedWall=null
+    
+    //Add walls
+    this.walls.push(
+      { //North
+        id:NextId(),
+        start: {
+          column:0,
+          row:0
+        },
+        direction:"x",
+        length:this.levelDetails.width,
+        texture:{
+          nw:"floorTex1",
+          se:"floorTex1"
+        }
+      },
+      { //South
+        id:NextId(),
+        start: {
+          column:0,
+          row:this.levelDetails.height
+        },
+        direction:"x",
+        length:this.levelDetails.width,
+        texture:{
+          nw:"floorTex1",
+          se:"floorTex1"
+        }
+      },
+      { //West
+        id:NextId(),
+        start: {
+          column:0,
+          row:0
+        },
+        direction:"y",
+        length:this.levelDetails.height,
+        texture:{
+          nw:"floorTex1",
+          se:"floorTex1"
+        }
+      },
+      { //West
+        id:NextId(),
+        start: {
+          column:this.levelDetails.width,
+          row:0
+        },
+        direction:"y",
+        length:this.levelDetails.height,
+        texture:{
+          nw:"floorTex1",
+          se:"floorTex1"
+        }
+      }
+    )
+    
+    //Update graphics
+    this.updateWallGraphics()
+  }
+  
+  updateWallGraphics() {
+    //Set wall graphic Data
+    const thickness=this.levelDetails.wallThickness*this.tileSize,
+      color=Palette.red1.hex,
+      selectedColor=Palette.blue1.hex,
+      depth=100
+    
+    
+    //create wall graphics
+    this.walls.forEach(wallData=>{
+      if (wallData.graphics)
+        wallData.graphics.destroy()
+      
+      const x=wallData.start.column*this.tileSize
+      const y=wallData.start.row  *this.tileSize
+      
+      const width = wallData.direction==="x"
+        ?wallData.length*this.tileSize
+        :thickness
+      const height = wallData.direction==="y"
+        ?wallData.length*this.tileSize
+        :thickness
+      const origin=wallData.direction==="x"
+        ?[0,0.5]:[0.5,0]
+        
+      const wallColor=(this.selectedWall) && this.selectedWall.id===wallData.id?selectedColor:color
+      
+        
+      const wall = this.add.rectangle(x,y,width,height,wallColor)
+        .setDepth(depth)
+        .setOrigin(origin[0],origin[1])
+      wallData.graphics=wall
+      
+    })
+  }
+  
+  
+  
+  tileClicked(col,row,cellX,cellY) {
+    
     
     if (this.selectedTool.key==="select") {
       
       this.selectTile(col,row)
-    } else if (["decoration","object"].includes(this.selectedTool.type)) {
-      this.placeObject(col,row,this.selectedTool.key)
+    } else if (this.selectedTool.key==="wallSelect") {
+      col=cellX<0.5?col:col+1
+      row=cellY<0.5?row:row+1
+      this.selectWall(col,row)
+      
+    } else if (this.selectedTool.key==="addWall") {
+      try { 
+      col=cellX<0.5?col:col+1
+      row=cellY<0.5?row:row+1
+      this.performAddWallAction(col,row)
+      } catch (er) {console.log(er.message,er.stack); throw er} 
+    } else if (this.selectToolType==="select" || this.selectToolType==="wallSelect") {
+      return
+    }
+    else {
+      this.actionManager.execute(this.selectedTool.action,
+      {
+        data:this.selectedTool,
+        column:col,
+        row
+      })
+      //this.placeObject(col,row,this.selectedTool.key)
     }
   }
   
-  placeObject(col,row,key) {
+  modifyWallLength(args) {
+    this.actionManager.execute("modifyWallLength",args)
+    this.updateWallGraphics()
+  }
+  
+  deleteWall(id) {
+    this.actionManager.execute("deleteWall",id)
+    this.deselect()
+  }
+  
+  rotateWall(id) {
+    this.actionManager.execute("rotateWall",id)
+    this.updateWallGraphics()
+  }
+  
+  moveWall(args) {
+    this.actionManager.execute("moveWall",args)
+    this.updateWallGraphics()
+  }
+  
+  removeAttribute(args) {
+    this.actionManager.execute("removeAttribute",args)
+  }
+  
+  addAttribute(args) {
+    
+    this.actionManager.execute("addAttribute",args)
+  }
+  
+  modifyAttribute(args) {
+    
+    this.actionManager.execute("modifyAttribute",args)
+    if (args.key==='rotation') {
+      this.map[args.column][args.row][args.level][args.layer].sprite.angle=args.value
+    }
+  }
+  
+  clearTile(position) {
+    this.actionManager.execute("clearTile",position)
     try { 
-    
-    const object=Objects.find(o=>o.key===key)
-    const layer=object.layer
-    const level=0
-    const oid=Objects.findIndex(o=>o.key===key)
-    const tile= this.map[col][row][level][layer] || {}
-    
-    const sprite=this.add.image(
-      (col+0.5)*this.tileSize,
-      (row+0.5)*this.tileSize,
-      object.spriteKey
-    ).setDepth(layer+1)
-      
-    sprite.setScale(
-        this.tileSize/Math.max(
-          sprite.width,
-          sprite.height
-        )
-    )
-    
-    if (tile.sprite)
-      tile.sprite.destroy()
-      
-    tile.oid=oid
-    tile.attributes=object.attributes
-    tile.sprite=sprite
-    
-    this.map[col][row][level][layer]=tile
-    
+    this.nextLayer()
     } catch (er) {console.log(er.message,er.stack); throw er} 
+  }
+  
+  performAddWallAction(column,row) {
+    if (!this.addWallStart) {
+      const radius=10
+      const color=Palette.green1.hex
+      this.addWallStart={
+        column,
+        row,
+        graphics:this.add.circle(
+          column*this.tileSize,
+          row*this.tileSize,
+          radius,
+          color
+        ).setDepth(2000)
+          .setOrigin(0.5,0.5)
+      }
+    } else {
+      const dCol=column-this.addWallStart.column
+      const dRow=row-this.addWallStart.row
+      const direction = Math.abs(dRow)<=Math.abs(dCol)?"x":"y"
+      
+      this.actionManager.execute("addWall",{
+        column: direction==="x"?Math.min(column,this.addWallStart.column):this.addWallStart.column,
+        row:direction==="y"?Math.min(row,this.addWallStart.row):this.addWallStart.row,
+        length:direction==="y"?Math.abs(dRow):Math.abs(dCol),
+        direction
+      })
+      this.removeAddWallStart()
+      this.updateWallGraphics()
+    }
   }
   
   selectTile(col,row) {
@@ -277,20 +530,57 @@ export default class Game extends Phaser.Scene {
     this.selectedTile={
       column:col,
       row,
-      layer:0,
+      layer:-1,
       level:0
     }
-    EventCenter.emit("tileSelected",{
-      tile:this.getObjectAt(col,row,0,0),
-      position:{...this.selectedTile}
-    })
-    //this.showSelectionWindow()
+    this.nextLayer()
+    
+    } catch (er) {console.log(er.message,er.stack); throw er} 
+  }
+  
+  selectWall(column,row) {
+    try { 
+    
+    let wall
+    for (const wallData of this.walls) {
+      
+      if (wallData.direction==="x"){
+        if (
+          wallData.start.row===row
+          &&wallData.start.column<=column
+          &&wallData.start.column+wallData.length>column
+        ) {
+          wall=wallData
+          break
+        }
+      } else {
+        if (
+          wallData.start.column===column
+          &&wallData.start.row<=row
+          &&wallData.start.row+wallData.length>row
+        ) {
+          wall=wallData
+          break
+        }
+      }
+    }
+    if (wall) {
+      
+      this.deselect()
+      this.selectedWall=wall
+      //wall.graphics.setFillStyle(0x0000ff)
+      this.updateWallGraphics()
+      EventCenter.emit("wallSelected",wall)
+    }
     } catch (er) {console.log(er.message,er.stack); throw er} 
   }
   
   deselect() {
     this.selectionMarker.setVisible(false)
-    EventCenter.emit("tileDeselected")
+    EventCenter.emit("deselected")
+    this.selectedWall=null
+    this.removeAddWallStart()
+    this.updateWallGraphics()
     
   }
   
@@ -320,8 +610,10 @@ export default class Game extends Phaser.Scene {
     this.selectedTool={
       type:key,
       key:tool.key,
-      index:-1
+      index:-1,
+      action:tool.action
     }
+    
     this.nextTool()
   }
   
@@ -341,16 +633,38 @@ export default class Game extends Phaser.Scene {
           key: "zoom"
         },
       ],
+      wallSelect:[
+        {
+          label:"Select",
+          key:"wallSelect"
+        },
+        {
+          label: "Pan",
+          key: "pan"
+        },
+        {
+          label: "Zoom",
+          key: "zoom"
+        },
+      ],
+      addWall:[
+        {
+          label:"Add Wall",
+          key:"addWall"
+        }
+      ],
       decoration:Objects.filter(object=>object.type==="decoration").map(object=>{
         return {
           icon:object.iconKey,
-          key:object.key
+          key:object.key,
+          action:"placeObject"
         }
       }),
       object:Objects.filter(object=>object.type==="object").map(object=>{
         return {
           icon:object.iconKey,
-          key:object.key
+          key:object.key,
+          action:"placeObject"
         }
       })
       
@@ -367,16 +681,40 @@ export default class Game extends Phaser.Scene {
   
   
   nextLayer() {
+    let counter=0
     this.selectedTile.layer=(this.selectedTile.layer+1)%3
-    
-    EventCenter.emit("tileSelected",{
-      tile:this.getObjectAt(
+    let tile=this.getObjectAt(
         this.selectedTile.column,
         this.selectedTile.row,
         this.selectedTile.layer,
-        this.selectedTile.level),
+        this.selectedTile.level)
+    while (!tile) {
+      counter++
+      if (counter>3) {
+        console.log("Tile gone missing?")
+        this.deselect()
+        return
+      }
+      this.selectedTile.layer=(this.selectedTile.layer+1)%3
+      tile=this.getObjectAt(
+        this.selectedTile.column,
+        this.selectedTile.row,
+        this.selectedTile.layer,
+        this.selectedTile.level
+      )
+    }
+    
+    EventCenter.emit("tileSelected",{
+      tile,
       position:{...this.selectedTile}
     })
+  }
+  
+  removeAddWallStart() {
+    if (this.addWallStart && this.addWallStart.graphics) {
+      this.addWallStart.graphics.destroy()
+      this.addWallStart=null
+    }
   }
   
   getObjectAt(col,row,layer,level) {
@@ -388,8 +726,21 @@ export default class Game extends Phaser.Scene {
     return tile[level][layer]
   }
   
+  exportLevel(config){
+    console.log(config)
+    exportLevel(
+      this.levelDetails,
+      this.map,
+      this.walls,
+      config
+    )
+  }
   
-  
+  undo(){
+    this.actionManager.undo()
+    this.updateWallGraphics()
+    this.removeAddWallStart()
+  }
   
   update(time,dt) {
     try { 

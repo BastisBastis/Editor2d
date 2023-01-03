@@ -41,6 +41,7 @@ export class Window {
     this._y=y
     this.depth=depth
     
+    
     this.bg
       .setOrigin(0.5,0.5)
       .setStrokeStyle(borderThickness,borderColor,1)
@@ -125,6 +126,7 @@ export class Window {
       this.bgBlocker.destroy()
     }
     this.bg.destroy()
+    this.children.forEach(child=>child.destroy())
   }
   
 }

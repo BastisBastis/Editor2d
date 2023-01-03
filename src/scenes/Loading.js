@@ -66,7 +66,7 @@ export default class Loading extends Phaser.Scene {
     //MusicManager.play(0,this)
     this.fadeOut(100)
     setTimeout(()=>{
-      this.scene.start("editor")
+      this.scene.start("mainMenu")
     },100)
   }
   

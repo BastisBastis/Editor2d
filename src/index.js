@@ -5,6 +5,7 @@ import WebFontLoaderPlugin from 'phaser3-rex-plugins/plugins/webfontloader-plugi
 
 import UI from "./scenes/UI"
 import Loading from "./scenes/Loading"
+import MainMenu from "./scenes/MainMenu"
 
 import Editor from "./scenes/Editor"
 
@@ -28,6 +29,7 @@ const config = {
     
     scene: [
       Loading,
+      MainMenu,
       Editor,
       UI,
     ],
