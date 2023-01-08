@@ -143,7 +143,7 @@ export class Toolbar {
    if (toolData.icon) {
       
       this.selectedToolButton.setText("")
-      this.selectedToolButton.setIcon(toolData.icon)
+      this.selectedToolButton.setIcon(toolData.icon,toolData.frame)
     } else {
       this.selectedToolButton.setIcon(null)
       this.selectedToolButton.setText(toolData.label)

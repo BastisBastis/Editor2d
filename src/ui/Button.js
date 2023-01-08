@@ -104,7 +104,7 @@ export class Button extends Window {
     return this
   }
   
-  setIcon(key) {
+  setIcon(key,frame) {
    if (this.icon) {
     this.icon.destroy()
    }
@@ -120,6 +120,10 @@ export class Button extends Window {
      key
     ).setDepth(this.depth)
      .setOrigin(0.5,0.5)
+     
+     
+    if (frame!==undefined)
+      this.icon.setFrame(frame)
      
     const scale=Math.min(
      this.width/this.icon.width,

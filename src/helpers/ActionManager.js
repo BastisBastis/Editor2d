@@ -404,6 +404,9 @@ export class ActionManager {
       (row+0.5)*this.scene.tileSize,
       object.spriteKey
     ).setDepth(layer+1)
+    
+    if (object.spriteFrame!==undefined)
+      sprite.setFrame(object.spriteFrame)
       
     sprite.setScale(
         this.scene.tileSize/Math.max(

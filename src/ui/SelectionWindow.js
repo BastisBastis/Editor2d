@@ -95,6 +95,8 @@ Level: ${position.level+1}`,
       ).setDepth(depth)
       const imageSize=Math.max(icon.width,icon.height)
       icon.setScale(iconSize/imageSize)
+      if (Objects[tile.oid].iconFrame)
+        icon.setFrame(Objects[tile.oid].iconFrame)
       this.items.push(icon)
     }
     

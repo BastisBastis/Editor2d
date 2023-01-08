@@ -3,6 +3,8 @@ import FloorTex1 from "../assets/images/TmpFloorTex2.png"
 import Object1_3d from "../assets/images/Tmp1-3d.png"
 import Object1_topdown from "../assets/images/Tmp1topdown.png"
 import Logo from "../assets/images/Logo.png" 
+import RobberObjects from "../assets/images/RobberObjects.png" 
+
 
 //RCDC
 import Wall1Icon from "../assets/images/rcdc/Wall1Icon0.png"
@@ -220,6 +222,10 @@ export const PreloadGraphics=scene=>{
     scene.load.image(key,url)
   })
   scene.load.image("logo",Logo)
+  scene.load.spritesheet("robbers",RobberObjects,{
+    frameHeight:128,
+    frameWidth:128
+  })
   
   } catch (er) {console.log(er.message,er.stack); throw er} 
 }

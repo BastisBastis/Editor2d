@@ -200,4 +200,43 @@ export const loadRCDCObjects=()=>{
   )
 }
 
-loadRCDCObjects()
+export const loadRobbersObjects=()=>{
+  clearObjects()
+  const attributes={
+    rotation:0,
+    offsetX:0,
+    offsetZ:0,
+    flipX:0,
+    flipZ:0
+  }
+  ;[
+    "chair",
+    "stove",
+    "kitchenSink",
+    "counter",
+    "tv",
+    "toilet",
+    "bathroomSink",
+    "computer",
+    "register",
+    "door"
+  ].forEach((key,i)=>{
+    const layer=["computer","register"].includes(key)?2:1
+    Objects.push(
+      {
+        key,
+        iconKey:"robbers",
+        iconFrame:i,
+        spriteKey:"robbers",
+        spriteFrame:i,
+        layer,
+        type:"object",
+        attributes:{...attributes}
+      },
+      
+    )
+  })
+  
+}
+
+loadRobbersObjects()

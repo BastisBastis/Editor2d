@@ -244,6 +244,7 @@ export default class Game extends Phaser.Scene {
     for (let x=0; x< this.levelDetails.width; x++) {
       const rows=[]
       for (let y=0; y<this.levelDetails.height;y++) {
+        /*
         const floorSprite=this.add.image(
           (x+0.5)*this.tileSize,
           (y+0.5)*this.tileSize,
@@ -253,14 +254,15 @@ export default class Game extends Phaser.Scene {
             this.tileSize,
             this.tileSize
           )
+          */
         rows.push(
           [
             [
-              {
+              /*{
                 oid:0,
                 sprite:floorSprite,
                 attributes:{...Objects[0].attributes}
-              },null,null
+              }*/null,null,null
             ]
           ]
         )
@@ -280,8 +282,12 @@ export default class Game extends Phaser.Scene {
               layer.sprite= this.add.image(
               (columnIndex+0.5)*this.tileSize,
               (rowIndex+0.5)*this.tileSize,
-              Objects[layer.oid].spriteKey
-            ).setDepth(1)
+              Objects[layer.oid].sprite
+            )
+            
+            if (Objects[layer.oid].spriteFrame!==undefined)
+              layer.sprite.setFrame(Objects[layer.oid].spriteFrame)
+            layer.sprite.setDepth(layerIndex+1)
               .setDisplaySize(
                 this.tileSize,
                 this.tileSize
@@ -597,6 +603,7 @@ export default class Game extends Phaser.Scene {
     EventCenter.emit("toolSelected",{
       ...this.selectedTool,
       icon:this.tools[toolType][index].icon,
+      frame:this.tools[toolType][index].iconFrame,
       label:this.tools[toolType][index].label
     })
     
@@ -656,6 +663,7 @@ export default class Game extends Phaser.Scene {
       decoration:Objects.filter(object=>object.type==="decoration").map(object=>{
         return {
           icon:object.iconKey,
+          iconFrame:object.iconFrame,
           key:object.key,
           action:"placeObject"
         }
@@ -663,6 +671,7 @@ export default class Game extends Phaser.Scene {
       object:Objects.filter(object=>object.type==="object").map(object=>{
         return {
           icon:object.iconKey,
+          iconFrame:object.iconFrame,
           key:object.key,
           action:"placeObject"
         }

@@ -14,7 +14,7 @@ const exportRCDCLevel=(
   map,
   walls,
 )=>{
-  console.log(1)
+  
   const data=[]
   for (let i=0;i<details.levels;i++) {
     const columns=[]
@@ -36,6 +36,49 @@ const exportRCDCLevel=(
   downloadObjectAsJson(data,details.title)
 }
 
+const exportFull=(
+  details,
+  map,
+  walls
+)=>{
+  const result={}
+  result.walls=walls.map(w=>{return {start:w.start,direction:w.direction,length:w.length}})
+  result.details=details
+  
+  const items=[]
+  
+  
+  for (let i=0;i<details.levels;i++) {
+    const columns=[]
+    map.forEach((cells,x)=>{
+      //const column=[]
+      cells.forEach((cell,y)=>{
+        cell[i].forEach(tile=>{
+          console.log(tile)
+          if (tile) {
+            
+            items.push({
+              index:tile.oid,
+              x,
+              y,
+              attributes:tile.attributes,
+              level:i
+            })
+            
+          }
+          
+        })
+      })
+      
+    })
+    
+  }
+  
+  
+  result.objects=items
+  downloadObjectAsJson(result,details.title)
+}
+
 export const exportLevel =(
   details,
   map,
@@ -47,6 +90,9 @@ export const exportLevel =(
   try { 
   if (rcdc)
     exportRCDCLevel(details,map,walls)
+  else
+    exportFull(details,map,walls)
+    //console.log(walls.map(w=>{return {start:w.start,direction:w.direction,length:w.length} }))
   
   } catch (er) {console.log(er.message,er.stack); throw er} 
 }
