@@ -87,8 +87,9 @@ export class ActionManager {
       EventCenter.emit("error","Cannot find wall with id "+id)
       return
     }
+    const wallIndex = this.walls.findIndex(wall=>wall.id===id)
     
-    const currentTexture = this.walls[id].texture[key]
+    const currentTexture = this.walls[wallIndex].texture[key]
     const nextTexture = (currentTexture+1) % WallTextures.length
     
     this.executeSetWallTexture(id,key,nextTexture)
@@ -104,8 +105,8 @@ export class ActionManager {
   }
   
   executeSetWallTexture(id, key, texture) {
-    console.log(id)
-    this.walls[id].texture[key] = texture
+    const wallIndex = this.walls.findIndex(wall=>wall.id===id)
+    this.walls[wallIndex].texture[key] = texture
     
   }
   

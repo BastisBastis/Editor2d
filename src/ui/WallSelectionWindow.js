@@ -48,7 +48,7 @@ export class WallSelectionWindow {
       0,
       0,
       width,
-      cam.height*1.8,
+      cam.height*1.95,
       Palette.blue4.hex
     ).setDepth(depth)
       .setOrigin(0,0)
@@ -136,6 +136,7 @@ Direction: ${wall.direction}`,
             id:wall.id,
             delta:-1
           })
+          
           } catch (er) {console.log(er.message,er.stack); throw er} 
         }
       },
@@ -221,19 +222,18 @@ Direction: ${wall.direction}`,
     this.tex1Btn = new Button(
         scene,
         width/2,
-        texturesY+160,
+        texturesY+140,
         "",
         {
           depth,
           onClick:()=>{
-            try { 
+            
             EventCenter.emit("nextWallTexture",{
               id:wall.id,
               key:"nw"
             })
             
             this.setWallTextureIcon(0)
-            } catch (er) {console.log(er.message,er.stack); throw er} 
           },
           width:buttonWidth,
           height:buttonWidth,
@@ -243,6 +243,44 @@ Direction: ${wall.direction}`,
       
       
       this.items.push(this.tex1Btn)
+      
+      const tex2Label=scene.add.text(
+      labelMarginX,
+      texturesY+240,
+      "S/E texture",
+      {
+        fontSize,
+        color:fontColor,
+        fontFamily:GlobalStuff.FontFamily
+      }
+    ).setOrigin(0,0)
+      .setDepth(depth)
+  
+    this.items.push(tex2Label)
+    
+    this.tex2Btn = new Button(
+        scene,
+        width/2,
+        texturesY+140+240,
+        "",
+        {
+          depth,
+          onClick:()=>{
+            
+            EventCenter.emit("nextWallTexture",{
+              id:wall.id,
+              key:"se"
+            })
+            
+            this.setWallTextureIcon(1)
+          },
+          width:buttonWidth,
+          height:buttonWidth,
+        }
+      )
+    this.setWallTextureIcon(1)
+    
+    this.items.push(this.tex2Btn)
     
     scene.input.setDraggable(bg)
     bg.on("drag",(p)=>{
@@ -254,10 +292,10 @@ Direction: ${wall.direction}`,
   }
   
   setWallTextureIcon(index) {
-    console.log(this.wall.id)
+    
     const key=["nw","se"][index]
-    const btn=[this.tex1Btn][index]
-    console.log(this.wall)
+    const btn=[this.tex1Btn,this.tex2Btn][index]
+    
     
     btn.setIcon(WallTextures[this.wall.texture[key]].spriteKey,WallTextures[this.wall.texture[key]].spriteFrame)
   }

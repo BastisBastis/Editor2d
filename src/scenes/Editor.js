@@ -485,6 +485,7 @@ export default class Game extends Phaser.Scene {
   modifyWallLength(args) {
     this.actionManager.execute("modifyWallLength",args)
     this.updateWallGraphics()
+    
   }
   
   deleteWall(id) {
@@ -581,7 +582,8 @@ export default class Game extends Phaser.Scene {
     try { 
     
     let wall
-    for (const wallData of this.walls) {
+    for (let i in this.walls) {
+      const wallData=this.walls[i]
       
       if (wallData.direction==="x"){
         if (
