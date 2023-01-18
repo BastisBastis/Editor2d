@@ -138,11 +138,29 @@ Level: ${position.level+1}`,
         onClick:()=>{
             
           if (this.tile.attributes.rotation!==undefined) {
+            
             EventCenter.emit("modifyAttribute",{
               ...this.tilePosition,
               key:"rotation",
-              value:(tile.attributes.rotation+90)%360
+              value:(Math.round(tile.attributes.rotation/1+90))%360
             })
+            const tmpOffsets={
+              z:tile.attributes.offsetX,
+              x:-tile.attributes.offsetZ
+            }
+            
+            EventCenter.emit("modifyAttribute",{
+              ...this.tilePosition,
+              key:"offsetX",
+              value:tmpOffsets.x
+            })
+            
+            EventCenter.emit("modifyAttribute",{
+              ...this.tilePosition,
+              key:"offsetZ",
+              value:tmpOffsets.z
+            })
+            
             this.updateAttributes()
           }
           

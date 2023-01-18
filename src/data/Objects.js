@@ -38,6 +38,9 @@ export const Objects=[
 ]
 
 
+export const WallTextures=[]
+
+
 
 const clearObjects=()=>{
   
@@ -219,7 +222,10 @@ export const loadRobbersObjects=()=>{
     "bathroomSink",
     "computer",
     "register",
-    "door"
+    "door",
+    "table",
+    "window",
+    "start"
   ].forEach((key,i)=>{
     const layer=["computer","register"].includes(key)?2:1
     Objects.push(
@@ -236,6 +242,47 @@ export const loadRobbersObjects=()=>{
       
     )
   })
+  ;[
+    "red",
+    "pink",
+    "wood",
+    "tiles",
+    "green"
+  ].forEach((key,i)=>{
+    const layer=0
+    Objects.push(
+      {
+        key,
+        iconKey:"robberTextures",
+        iconFrame:i,
+        spriteKey:"robberTextures",
+        spriteFrame:i,
+        layer,
+        type:"decoration",
+        attributes:{...attributes}
+      },
+      
+    )
+  })
+  
+  WallTextures.push(
+    {
+      spriteKey:"robberTextures",
+      spriteFrame:5
+    },
+    {
+      spriteKey:"robberTextures",
+      spriteFrame:6
+    },
+    {
+      spriteKey:"robberTextures",
+      spriteFrame:7
+    },
+    {
+      spriteKey:"robberTextures",
+      spriteFrame:8
+    },
+  )
   
 }
 

@@ -36,6 +36,7 @@ export default class Game extends Phaser.Scene {
     try { 
     //Background
     
+    
     const bg=this.add.rectangle(
       640,
       360,
@@ -44,6 +45,7 @@ export default class Game extends Phaser.Scene {
       Palette.white.hex
     ).setScrollFactor(0,0)
     .setDepth(-10000)
+    
     
     const uiWidth=180
     this.cameras.main.setViewport(
@@ -62,6 +64,7 @@ export default class Game extends Phaser.Scene {
       this.map=parsedData.map
       this.levelDetails=parsedData.details
       this.walls=parsedData.walls
+       
       this.updateTileGraphics()
       this.updateWallGraphics()
     } else {
@@ -73,6 +76,7 @@ export default class Game extends Phaser.Scene {
         wallThickness:0.2, //fraction of tile
       }
       this.setupMap()
+      
       this.setupWalls()
     }
     
@@ -128,7 +132,11 @@ export default class Game extends Phaser.Scene {
    
    EventCenter.on("modifyWallLength",this.modifyWallLength,this)
    
+   EventCenter.on("nextWallTexture",this.nextWallTexture,this)
+   
    EventCenter.on("exportLevel",this.exportLevel,this)
+   
+   EventCenter.on("toggleLayerFilter",this.toggleLayerFilter,this)
   }
   
   handleUILoaded() {
@@ -275,15 +283,19 @@ export default class Game extends Phaser.Scene {
     this.map.forEach((rows,columnIndex)=>{
       rows.forEach((levels,rowIndex)=>{
         levels.forEach((level,levelIndex)=>{
+          
           level.forEach((layer,layerIndex)=>{
             if (layer) {
+              
               if (layer.sprite)
                 layer.sprite.destroy()
+              
               layer.sprite= this.add.image(
               (columnIndex+0.5)*this.tileSize,
               (rowIndex+0.5)*this.tileSize,
-              Objects[layer.oid].sprite
+              Objects[layer.oid].spriteKey
             )
+            layer.sprite.setVisible(GlobalStuff.LayerFilter[layerIndex])
             
             if (Objects[layer.oid].spriteFrame!==undefined)
               layer.sprite.setFrame(Objects[layer.oid].spriteFrame)
@@ -293,7 +305,19 @@ export default class Game extends Phaser.Scene {
                 this.tileSize
             )
               .setAngle(layer.attributes.rotation||0)
+              
+              if (layer.attributes.offsetX) {
+                
+                //layer.sprite.x+=layer.attributes.offsetX*this.tileSize
+                
+              }
+                
+              //if (layer.attributes.offsetZ)
+              
+                //layer.sprite.y+=layer.attributes.offsetZ*this.tileSize
+              //console.log("l",Objects[layer.oid],layer.oid)
             }
+            
           }) 
         })
       })
@@ -323,7 +347,7 @@ export default class Game extends Phaser.Scene {
     //Create array
     this.walls=[]
     this.selectedWall=null
-    
+    //return
     //Add walls
     this.walls.push(
       { //North
@@ -335,8 +359,8 @@ export default class Game extends Phaser.Scene {
         direction:"x",
         length:this.levelDetails.width,
         texture:{
-          nw:"floorTex1",
-          se:"floorTex1"
+          nw:0,
+          se:0
         }
       },
       { //South
@@ -348,8 +372,8 @@ export default class Game extends Phaser.Scene {
         direction:"x",
         length:this.levelDetails.width,
         texture:{
-          nw:"floorTex1",
-          se:"floorTex1"
+          nw:1,
+          se:1
         }
       },
       { //West
@@ -361,8 +385,8 @@ export default class Game extends Phaser.Scene {
         direction:"y",
         length:this.levelDetails.height,
         texture:{
-          nw:"floorTex1",
-          se:"floorTex1"
+          nw:2,
+          se:2
         }
       },
       { //West
@@ -374,14 +398,15 @@ export default class Game extends Phaser.Scene {
         direction:"y",
         length:this.levelDetails.height,
         texture:{
-          nw:"floorTex1",
-          se:"floorTex1"
+          nw:3,
+          se:3
         }
       }
     )
     
     //Update graphics
     this.updateWallGraphics()
+    
   }
   
   updateWallGraphics() {
@@ -453,6 +478,10 @@ export default class Game extends Phaser.Scene {
     }
   }
   
+  nextWallTexture(args) {
+    this.actionManager.execute("nextWallTexture",args)
+  }
+  
   modifyWallLength(args) {
     this.actionManager.execute("modifyWallLength",args)
     this.updateWallGraphics()
@@ -487,6 +516,10 @@ export default class Game extends Phaser.Scene {
     this.actionManager.execute("modifyAttribute",args)
     if (args.key==='rotation') {
       this.map[args.column][args.row][args.level][args.layer].sprite.angle=args.value
+    } else if (args.key==='offsetX') {
+      this.map[args.column][args.row][args.level][args.layer].sprite.x=(Number(args.column)+Number(args.value)+0.5)*this.tileSize
+    } else if (args.key==='offsetZ') {
+      this.map[args.column][args.row][args.level][args.layer].sprite.y=(Number(args.row)+Number(args.value)+0.5)*this.tileSize
     }
   }
   
@@ -588,6 +621,11 @@ export default class Game extends Phaser.Scene {
     this.removeAddWallStart()
     this.updateWallGraphics()
     
+  }
+  
+  toggleLayerFilter(index) {
+    GlobalStuff.LayerFilter[index]=!GlobalStuff.LayerFilter[index]
+    this.updateTileGraphics()
   }
   
   nextTool() {
@@ -736,7 +774,7 @@ export default class Game extends Phaser.Scene {
   }
   
   exportLevel(config){
-    console.log(config)
+    
     exportLevel(
       this.levelDetails,
       this.map,

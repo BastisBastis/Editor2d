@@ -1,5 +1,5 @@
 import UndoManager from "undo-manager"
-import { Objects } from "../data/Objects" 
+import { Objects, WallTextures } from "../data/Objects" 
 import { EventCenter } from "../helpers/EventCenter" 
 import { NextId } from "../helpers/IdGenerator" 
 
@@ -69,9 +69,44 @@ export class ActionManager {
           args
         )
         break
+      case "nextWallTexture":
+        this.nextWallTexture(
+          args
+        )
+        break
     }
     
     } catch (er) {console.log(er.message,er.stack); throw er} 
+  }
+  
+  nextWallTexture({id,key}) {
+    
+    if (!this.walls.some(wall=>{
+      return wall.id===id
+    })) {
+      EventCenter.emit("error","Cannot find wall with id "+id)
+      return
+    }
+    
+    const currentTexture = this.walls[id].texture[key]
+    const nextTexture = (currentTexture+1) % WallTextures.length
+    
+    this.executeSetWallTexture(id,key,nextTexture)
+    
+    this.undoManager.add({
+      undo:()=>{
+        this.executeSetWallTexture(id,key,currentTexture)
+      },
+      redo:()=>{
+        this.executeSetWallTexture(id,key,nextTexture)
+      }
+    })
+  }
+  
+  executeSetWallTexture(id, key, texture) {
+    console.log(id)
+    this.walls[id].texture[key] = texture
+    
   }
   
   modifyWallLength({id,delta}) {
@@ -124,8 +159,8 @@ export class ActionManager {
         direction:args.direction,
         length:args.length,
         texture:{
-          nw:"floorTex1",
-          se:"floorTex1"
+          nw:0,
+          se:0
         }
     })
   }

@@ -42,40 +42,58 @@ const exportFull=(
   walls
 )=>{
   const result={}
-  result.walls=walls.map(w=>{return {start:w.start,direction:w.direction,length:w.length}})
+  //console.log(details)
+  result.walls=walls.map(w=>{return {
+    start:w.start,
+    direction:w.direction,
+    length:w.length,
+    texture:w.texture
+    }})
   result.details=details
   
   const items=[]
   
+  result.levels=[]
   
   for (let i=0;i<details.levels;i++) {
     const columns=[]
+    result.levels.push(columns)
     map.forEach((cells,x)=>{
-      //const column=[]
+      const column=[]
+      
+      columns.push(column)
       cells.forEach((cell,y)=>{
-        cell[i].forEach(tile=>{
-          console.log(tile)
+        const layers=[]
+        column.push(layers)
+        cell[i].forEach((tile,layerIndex)=>{
+          
           if (tile) {
-            
-            items.push({
+            /*console.log(tile,{
               index:tile.oid,
-              x,
-              y,
               attributes:tile.attributes,
-              level:i
+              level:i,
+              layer:layerIndex
+            })*/
+            layers.push({
+              index:tile.oid,
+              attributes:tile.attributes,
+              level:i,
+              layer:layerIndex
             })
             
           }
           
         })
+        
       })
       
     })
     
   }
+  //console.log(result)
   
-  
-  result.objects=items
+  //result.objects=items
+  //
   downloadObjectAsJson(result,details.title)
 }
 

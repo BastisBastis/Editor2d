@@ -4,6 +4,7 @@ import Object1_3d from "../assets/images/Tmp1-3d.png"
 import Object1_topdown from "../assets/images/Tmp1topdown.png"
 import Logo from "../assets/images/Logo.png" 
 import RobberObjects from "../assets/images/RobberObjects.png" 
+import RobberTextures from "../assets/images/RobbersTextureIcons.png"
 
 
 //RCDC
@@ -225,6 +226,10 @@ export const PreloadGraphics=scene=>{
   scene.load.spritesheet("robbers",RobberObjects,{
     frameHeight:128,
     frameWidth:128
+  })
+  scene.load.spritesheet("robberTextures",RobberTextures,{
+    frameHeight:64,
+    frameWidth:64
   })
   
   } catch (er) {console.log(er.message,er.stack); throw er} 

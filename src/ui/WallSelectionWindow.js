@@ -4,7 +4,7 @@ import { GlobalStuff } from "../helpers/GlobalStuff"
 
 //Data
 import { Palette } from "../data/Palette" 
-import { Objects } from "../data/Objects" 
+import { Objects , WallTextures} from "../data/Objects" 
 
 //UI Elements
 import { Button } from "../ui/Button"
@@ -48,7 +48,7 @@ export class WallSelectionWindow {
       0,
       0,
       width,
-      cam.height*1.5,
+      cam.height*1.8,
       Palette.blue4.hex
     ).setDepth(depth)
       .setOrigin(0,0)
@@ -202,6 +202,48 @@ Direction: ${wall.direction}`,
     
     
     
+    const texturesY = buttons.at(-1).y + 80
+    
+    const tex1Label=scene.add.text(
+      labelMarginX,
+      texturesY,
+      "N/W texture",
+      {
+        fontSize,
+        color:fontColor,
+        fontFamily:GlobalStuff.FontFamily
+      }
+    ).setOrigin(0,0)
+      .setDepth(depth)
+  
+    this.items.push(tex1Label)
+    
+    this.tex1Btn = new Button(
+        scene,
+        width/2,
+        texturesY+160,
+        "",
+        {
+          depth,
+          onClick:()=>{
+            try { 
+            EventCenter.emit("nextWallTexture",{
+              id:wall.id,
+              key:"nw"
+            })
+            
+            this.setWallTextureIcon(0)
+            } catch (er) {console.log(er.message,er.stack); throw er} 
+          },
+          width:buttonWidth,
+          height:buttonWidth,
+        }
+      )
+      this.setWallTextureIcon(0)
+      
+      
+      this.items.push(this.tex1Btn)
+    
     scene.input.setDraggable(bg)
     bg.on("drag",(p)=>{
       const scroll=(p.y-p.prevPosition.y)/1
@@ -209,6 +251,15 @@ Direction: ${wall.direction}`,
       this.scroll(scroll)
     })
     
+  }
+  
+  setWallTextureIcon(index) {
+    console.log(this.wall.id)
+    const key=["nw","se"][index]
+    const btn=[this.tex1Btn][index]
+    console.log(this.wall)
+    
+    btn.setIcon(WallTextures[this.wall.texture[key]].spriteKey,WallTextures[this.wall.texture[key]].spriteFrame)
   }
   
   

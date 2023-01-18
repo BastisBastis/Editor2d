@@ -110,6 +110,12 @@ export class LevelDetails extends Window {
           })
         }
       },
+      {
+        label:"Toggle\nFloor",
+        onClick:()=>{
+          EventCenter.emit("toggleLayerFilter",0)
+        }
+      },
     ].forEach((btnData,i)=>{
       this.createButton(
         width-120-i*200,

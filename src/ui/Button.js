@@ -130,8 +130,10 @@ export class Button extends Window {
      this.height/this.icon.height
     )*0.8
     
-    this.icon.setScale(scale)
     
+    this.icon.setScale(scale)
+    if (!this.children.includes(this.icon))
+     this.children.push(this.icon)
     return this
   }
   
